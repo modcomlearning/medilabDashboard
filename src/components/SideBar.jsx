@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from "styled-components"
 import { AiOutlineAppstore,AiFillAccountBook, AiFillAlert, AiOutlineLogout } from "react-icons/ai"
 import {AiOutlineBank, AiOutlinePlusCircle, AiOutlineUser} from "react-icons/ai"
@@ -72,9 +72,7 @@ const Section = styled.section`
                   }
                 }//end li
             }//end ul     
-            .active{
-                 background-color: black;
-            }
+        
             
         }//end links
      } //end top 
@@ -107,11 +105,9 @@ const Section = styled.section`
         }
 `
 //Style End here
+
 const SideBar = () => {
-    //Hooks
-const { logout } = ReactLogout();
-const [currentLink, setCurrentLink] = useState(1)
-    console.log("Current: "+currentLink)
+  
     return ( 
         <Section>
             <div className="top">
@@ -122,18 +118,13 @@ const [currentLink, setCurrentLink] = useState(1)
                 
                 <div className="links">
                     <ul>
-                        <li className={currentLink === 1 ? "active" : "none"}
-                            onClick={() => setCurrentLink(1)}>
-                            
+                        <li>
                               <Link to="/"><AiOutlinePlusCircle/>Dashboard</Link>
                         </li>
-                        <li className={currentLink === 2 ? "active" : "none"}
-                            onClick={() => setCurrentLink(2)}>
-                            
+                        <li>
                               <Link to="/profile"><AiOutlineAppstore/>My Profile</Link>
                         </li>
-                        <li className={currentLink === 3 ? "active" : "none"}
-                            onClick={() => setCurrentLink(3)}>
+                        <li>
                               <Link to="/addtests"><AiTwotoneCopy/>Add Tests</Link>
                         </li>
                         <li>
@@ -161,7 +152,7 @@ const [currentLink, setCurrentLink] = useState(1)
             </div>
 
             <div className="p-4">
-                <button onClick={logout} className="btn btn-dark btn-sm">
+                <button onClick="" className="btn btn-dark btn-sm">
                     <AiOutlineLogout /> Logout
                 </button>
             </div>

@@ -384,8 +384,6 @@ path='/viewtests': Renders the LabTests component when /viewtests is accessed.<b
 path='/mybookings': Renders the MyBookings component when /mybookings is accessed.<br>
 
 
-
-
 Now, Run you App and Access the routes you defined, example below shows how to Access sign up route
 
     http://127.0.0.1:3000/signup
@@ -393,11 +391,335 @@ Now, Run you App and Access the routes you defined, example below shows how to A
 Try out the rest.
 
 
+## Part 3
+In this Part, we start building our Components, Helpers and Styles.
+
+Open TopBar.jsx and Update it by Adding below code.
+
+    //Imports
+    import styled from "styled-components"
+    import { AiOutlineAppstore, AiFillBell } from "react-icons/ai"
+    import { AiFillCalendar } from 'react-icons/ai';
+    import Avatar from "../images/icon.png"
+    const TobBar = () => {
+    
+        return (  
+            <Nav>
+            <div className="admin">
+                    Admin Portal          
+                </div>    
+
+                <div className="content">
+                    <div className="date">
+                        <AiFillCalendar />
+                        {/* Below user will be updated once - Sign in is done */}
+                        <span>User: Bob </span>   
+                    </div>
+
+                    <div className="icon">
+                        <AiOutlineAppstore />
+                        <span>/</span>
+                        <AiFillBell />
+                        <div className="image">
+                            <img src={Avatar} alt=""/>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </Nav>
+        );
+    }
+    export default TobBar;
+    // Below is the TopBar Style
+    const Nav = styled.nav`
+        display:flex ;
+        position: fixed;
+        z-index: 0;
+        top:0;
+        right: 0;
+        justify-content: space-between;
+        background-color: aliceblue;
+        overflow: auto;
+        width: 75%;
+        .admin{
+            color: orange;
+            display: flex;
+            margin-top: 5px; 
+            align-items: center;
+            margin-left: 10px;
+            input{
+                padding: 2%;
+                border-radius: 1px;
+
+            }
+        }
+        .content{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px; 
+            align-items: center;
+            .date{
+                background-color: white;
+                color: black;
+                display: flex;
+                align-items: center;
+                padding: 0.3rem;
+                height: 10px;
+                span {
+                    color: grey;
+                }
+                svg{
+                    margin-right :8px;
+                    color: brown;
+                    font-size: 24px;
+                }
+            }
+            .icon{
+                display: flex;
+                align-items: center;
+                padding-left: 1rem;
+                gap: 1rem;
+                svg{
+                color: brown;
+                font-size:24px;
+                }
+                .image{
+                    margin-right: 10%;
+                    img{
+                        color: aliceblue;
+                        font-size: 24px;
+                        width: 40px;
+                        margin-right: 5%;
+                    }
+                }
+            }
+
+        }
+
+    `
+
+Test Above TopBar by Callin It in MainContent.jsx  Like below (This is for Testing Purposes)
+
+    // src/components/MainContent.jsx
+
+    import React from 'react';
+    import TopBar from './TopBar';  // Import TopBar component
+
+    const MainContent = () => {
+    return (
+        <div>
+        <TopBar />  {/* Include TopBar component */}
+        <h1>Main Content</h1>
+        <p>This is the main content of the page.</p>
+        </div>
+    );
+    };
+
+    export default MainContent;
 
 
 
+Now Run and Access MainContent    http://127.0.0.1:3000/
 
 
+
+## Part 4
+In this part, we create the SideBar, Open SideBar.jsx and Update with below code.
+
+        import React, { useState } from 'react';
+        import styled from "styled-components"
+        import { AiOutlineAppstore,AiFillAccountBook, AiFillAlert, AiOutlineLogout } from "react-icons/ai"
+        import {AiOutlineBank, AiOutlinePlusCircle, AiOutlineUser} from "react-icons/ai"
+        import {AiTwotoneCopy}  from "react-icons/ai"
+        import { Link } from "react-router-dom"
+        import ReactLogout from '../helpers/ReactLogout';
+        // import ReactLogout from '../helpers/ReactLogout';
+        //sudo npm install react-router-dom@latest
+        //style
+        const Section = styled.section`
+            background-color: #00a6ff;
+            display: flex;
+            position: fixed;
+            overflow: auto;
+            z-index: 1;
+            flex-direction: column;
+            width: 25vw;
+            left: 0;
+            height: 100%;
+            align-items: center;
+            padding-top:10px;
+            .top{
+                display:flex ;
+                flex-direction: column;
+                width: 100%;
+                .brand{
+                    width: 100%;
+                    display: flex;
+                    justify-content:center;
+                    align-items: center;
+                    span{
+                        font-size: 1.5rem;
+                        color: white;
+                        font-weight:bold;
+                    }  
+                    svg{
+                        color: aliceblue;
+                        font-size: 2rem;
+                        margin-right: 2px;
+                    }
+                }//end brand
+            
+                .links{
+                    display: flex;
+                    flex-direction: column;
+                    ul{
+                        list-style-type: none;
+                        padding: 1rem;
+                        li {
+                        padding: 0.5rem;
+                        margin:5px;
+                        border-radius: 0.5rem;
+                        text-align: left;
+                        &:hover{
+                            background-color: black;
+                            a{
+                                color: white;
+                                text-decoration: none  ;
+                            }
+                        }//end hover
+                        a{
+                            color:#fafcfd;
+                            text-decoration: none;
+                            display: flex;
+                            align-items: center;
+                            svg{
+                                fill: #f76c8a;
+                                font-size: 1.5rem;
+                                margin-right: 10px;
+                            } 
+                        }
+                        }//end li
+                    }//end ul     
+                
+                    
+                }//end links
+            } //end top 
+
+            .bottom{
+                width: 90%;
+                display: flex;
+                flex-direction: column;
+                padding: 10px;
+                justify-content: center;
+                background-color: #f76c8a;
+                align-items: center;
+                border-radius : 10px;
+                    svg{
+                        fill: #fafcfd;
+                        font-size: 3rem;
+                    }
+                    span{
+                        color: white;
+                    }
+                }//end bottom
+                .logout{
+                    display:flex;
+                    background-color: white;
+                    padding: 5px; width: 6em; display: inline;
+                    margin-top: 10px; margin-bottom: 10px;
+                    a{
+                        text-decoration: none;   
+                    }
+                }
+        `
+        //Style End here
+
+        const SideBar = () => {
+        
+            return ( 
+                <Section>
+                    <div className="top">
+                        <div className="brand">
+                            <AiOutlineBank />
+                            <span>MEDILAB</span>
+                        </div>
+                        
+                        <div className="links">
+                            <ul>
+                                <li>
+                                    <Link to="/"><AiOutlinePlusCircle/>Dashboard</Link>
+                                </li>
+                                <li>
+                                    <Link to="/profile"><AiOutlineAppstore/>My Profile</Link>
+                                </li>
+                                <li>
+                                    <Link to="/addtests"><AiTwotoneCopy/>Add Tests</Link>
+                                </li>
+                                <li>
+                                    <Link to="/viewtests"><AiOutlineUser />Lab Tests</Link>
+                                </li>
+                                <li>
+                                    <Link to="/mybookings"><AiOutlinePlusCircle/>My Bookings</Link>
+                                </li>
+                                <li>
+                                    <Link to="/addnurses"><AiFillAccountBook/>Add Nurses</Link>
+                                </li>
+
+                                <li>
+                                    <Link to="/viewnurses"><AiFillAlert/>Nurses</Link>
+                                </li>
+                            </ul>                    
+                        </div>
+                    </div>    
+                    {/* End Topdiv */}
+                    <div className="bottom">
+                        <AiOutlineAppstore />
+                        <span>GREAT UI. <button>Go Pro</button></span> <br />
+                        <br />
+                        <span><strong>Upgrade Now</strong></span>
+                    </div>
+
+                    <div className="p-4">
+                        <button onClick="" className="btn btn-dark btn-sm">
+                            <AiOutlineLogout /> Logout
+                        </button>
+                    </div>
+                </Section>
+
+            );
+        }
+
+        export default SideBar;
+
+
+
+Call the SideBar in MainContent, Add It Below the TopBar in below code.
+
+     // src/components/MainContent.jsx
+
+    import React from 'react';
+    import TopBar from './TopBar';  // Import TopBar component
+
+    const MainContent = () => {
+    return (
+        <div>
+        <TopBar />  {/* Include TopBar component */}
+        <SideBar />  {/* Include SideBar component */}
+
+        <h1>Main Content</h1>
+        <p>This is the main content of the page.</p>
+        </div>
+    );
+    };
+
+    export default MainContent;
+
+
+
+Now Run and Access MainContent    http://127.0.0.1:3000/
+
+![Alt text](image.png)
 
 
 

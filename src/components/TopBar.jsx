@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+
 import styled from "styled-components"
-import { AiOutlineAppstore,AiFillAccountBook, AiFillAlert, AiOutlineLogout, AiFillBell } from "react-icons/ai"
-import {AiOutlineBank, AiOutlinePlusCircle, AiOutlineUser} from "react-icons/ai"
-import { AiTwotoneCopy } from "react-icons/ai"
+import { AiOutlineAppstore, AiFillBell } from "react-icons/ai"
 import { AiFillCalendar } from 'react-icons/ai';
 import Avatar from "../images/icon.png"
 const TobBar = () => {
@@ -17,7 +15,7 @@ const TobBar = () => {
             <div className="content">
                 <div className="date">
                     <AiFillCalendar />
-                    <span>User: { lab_name }</span>
+                    <span>User: Bob</span>
                 </div>
 
                 <div className="icon">
