@@ -15,7 +15,7 @@ const TobBar = () => {
             <div className="content">
                 <div className="date">
                     <AiFillCalendar />
-                    <span>User: Bob</span>
+                    <span>User: { lab_name }</span>
                 </div>
 
                 <div className="icon">

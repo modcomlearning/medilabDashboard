@@ -105,9 +105,10 @@ const Section = styled.section`
         }
 `
 //Style End here
-
 const SideBar = () => {
-  
+    //Hooks
+const { logout } = ReactLogout();
+
     return ( 
         <Section>
             <div className="top">
@@ -152,7 +153,7 @@ const SideBar = () => {
             </div>
 
             <div className="p-4">
-                <button onClick="" className="btn btn-dark btn-sm">
+                <button onClick={logout} className="btn btn-dark btn-sm">
                     <AiOutlineLogout /> Logout
                 </button>
             </div>
