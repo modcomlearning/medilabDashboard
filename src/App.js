@@ -1,7 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
-import MainContent from './components/MainContent';
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MainContent from './components/MainContent';
 import Signin from './components/Signin';
 import Signup from './components/Signup';
 import AddNurses from './components/AddNurses';
