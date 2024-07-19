@@ -48,7 +48,7 @@ Use the following commands to create the components, helpers, images, and styles
 
 Here’s how you can explain the purpose of each folder:
 
-<b>components:</br>
+<b>components:</b></br>
 This folder will contain all the reusable React components. Components are the building blocks of your React application and are typically organized by feature or functionality.
 
 <b>helpers:</b>
