@@ -847,7 +847,7 @@ Now Run and Access MainContent    http://127.0.0.1:3000/
 
 The output has the SideBar, TopBar and The MainContent.
 
-![Alt text](image-1.png)
+![Alt text](image-2.png)
 
 
 

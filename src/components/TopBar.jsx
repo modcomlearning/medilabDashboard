@@ -4,8 +4,7 @@ import { AiOutlineAppstore, AiFillBell } from "react-icons/ai"
 import { AiFillCalendar } from 'react-icons/ai';
 import Avatar from "../images/icon.png"
 const TobBar = () => {
-    //access labname from top bar
-    const lab_name = localStorage.getItem("lab_name")
+
     return (  
         <Nav>
            <div className="admin">
@@ -15,7 +14,7 @@ const TobBar = () => {
             <div className="content">
                 <div className="date">
                     <AiFillCalendar />
-                    <span>User: { lab_name }</span>
+                    <span>User: Bob</span>
                 </div>
 
                 <div className="icon">
