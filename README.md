@@ -694,7 +694,7 @@ In this part, we create the SideBar, Open SideBar.jsx and Update with below code
 
 
 
-Call the SideBar in MainContent, Add It Below the TopBar in below code.
+Call the SideBar in MainContent, Add it Below the Before TopBar in below code.
 
      // src/components/MainContent.jsx
 
@@ -704,8 +704,9 @@ Call the SideBar in MainContent, Add It Below the TopBar in below code.
     const MainContent = () => {
     return (
         <div>
-        <TopBar />  {/* Include TopBar component */}
         <SideBar />  {/* Include SideBar component */}
+        <TopBar />  {/* Include TopBar component */}
+        
 
         <h1>Main Content</h1>
         <p>This is the main content of the page.</p>
@@ -722,18 +723,131 @@ Now Run and Access MainContent    http://127.0.0.1:3000/
 ![Alt text](image.png)
 
 
+## Part 5
+Instead of having the Top Bar and SideBar included Individually in MainContent, we can combine them in one Component named Layout, then Call the Layout component in MainContent.
+
+Create a File named Layout.jsx in helpers Folder, Add below code.
+
+    import SideBar from "../components/SideBar";
+    import TopBar from "../components/TopBar";
+    // This will render side bar and topbar
+    const Layout = () => {
+        return (  
+            <div>
+                <SideBar />
+                <TopBar/>
+            </div>
+        );
+    }
+    
+    export default Layout;
+
+
+
+Now in MainContent.jsx, Just call the Layout component like below.
+
+
+     // src/components/MainContent.jsx
+
+    import React from 'react';
+    import Layout from '../helpers/Layout';
+
+    const MainContent = () => {
+    return (
+        <div>
+        <Layout />  {/* Include Layout component which has SideBar and TopBar*/}
+
+
+        <h1>Main Content</h1>
+        <p>This is the main content of the page.</p>
+        </div>
+    );
+    };
+
+    export default MainContent;
 
 
 
 
 
+Next we need to Create and Style the Content for MainContent, Here we will use a styled components to position the MainContent below the TopBar and to the Right of SideBar.
+
+In styles folder, create a file named Main.jsx and Add below code.
+
+    import styled from "styled-components"
+    const Main = styled.section`
+        display: flex;
+        flex-direction: column;
+        background-color: #f7fafb;
+        margin-left: 26%;
+        width: 75%;
+        position: relative;
+        top: 50px;
+    `
+    export default Main;
 
 
 
 
+Above Main.jsx will be used in MainContent to Style the MainContent.
+Below is the Updated MainContent.jsx
 
 
+        import Main from '../styles/Main';
+        import Layout from '../helpers/Layout';
+        const MainContent = () => {
 
+            return ( 
+                <div>
+                    {/* Include Side and Top Bars */}
+                    <Layout/>
+                    {/* Include Main, the styled component, put some divs inside the Main */}
+                    <Main>
+                        <div className="main">
+                            <h1>Dashboard</h1>
+                            <div class = "row">
+                                <div className='col-md-4'>
+                                    <div className='card shadow p-4'>
+                                        Creative 
+                                        <div className='card-body'>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-md-4'>
+                                    <div className='card shadow p-4'>
+                                        Affordable 
+                                        <div className='card-body'>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-md-4'>
+                                    <div className='card shadow p-4'>
+                                        Efficient 
+                                        <div className='card-body'>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </Main>
+                </div>
+            
+            );
+        }
+        
+        export default MainContent;
+
+
+    
+Now Run and Access MainContent    http://127.0.0.1:3000/
+
+The output has the SideBar, TopBar and The MainContent.
+
+![Alt text](image-1.png)
 
 
 
