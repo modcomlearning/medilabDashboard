@@ -3,11 +3,11 @@ const ReactLogout = () => {
     //logout function
     const navigation = useNavigate()
     const logout = () => {
-        localStorage.clear();
-        navigation("/signin")
+        localStorage.clear(); // Clear localStorage
+        navigation("/signin") // Redirect to Signin
     };
 
     return { logout }; // Export the logout function
 }
  
-export default ReactLogout;
+export default ReactLogout;  //Export the component

@@ -151,7 +151,7 @@ const { logout } = ReactLogout();
                 <br />
                 <span><strong>Upgrade Now</strong></span>
             </div>
-
+            {/* ADD BELOW */}
             <div className="p-4">
                 <button onClick={logout} className="btn btn-dark btn-sm">
                     <AiOutlineLogout /> Logout
