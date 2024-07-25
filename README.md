@@ -851,20 +851,938 @@ The output has the SideBar, TopBar and The MainContent.
 
 
 
+## Part 6
+### Step 1
+In this step, we create the Sign Up Component. <br>
+
+To Post data to API, we use axios  https://axios-http.com/docs/intro  <br>
+
+First install axios, In Terminal change directory to your application folder and use below command.
+
+  sudo npm install axios
+
+
+In helpers Folder, Create a File named axiosInstance.jsx and write below code
+
+
+    import axios from 'axios';
+    const axiosInstance = axios.create({
+        baseURL: 'https://pebu.pythonanywhere.com/api',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    export default axiosInstance;
+
+
+
+Above code snippet creates and exports an instance of Axios, pre-configured with a base URL and headers. This setup is useful for making HTTP requests to the specified API without having to repeat the base URL and headers for each request.  NB: Please use your API EndPoint.
+
+
+Next,  Open Signup.jsx and Update it with below code.
+
+
+        import { useState } from "react";
+        import { styled } from "styled-components";
+        import { Link } from "react-router-dom";
+        import axiosInstance from "../helpers/axiosInstance";
+        const Signup = () => {
+            //States - Hooks
+            const [lab_name, setName] = useState(null)
+            const [permit_id, setPermit] = useState(null)
+            const [email, setEmail] = useState(null)
+            const [phone, setPhone] = useState(null)
+            const [password, setPassword] = useState(null)
+            const [loading, setLoading] = useState(false)
+            const [success, setSuccess] = useState(null)
+            const [failure, setFailure] = useState(null)
+
+            //Action when submit button is pressed
+            const submit = (e) => {
+                e.preventDefault();
+                setLoading(true)
+                setSuccess(null)
+                setFailure(null)
+                console.log("submitting")
+                    //Use Axios instance to post data to API
+                    axiosInstance.post('/labsignup', {
+                        lab_name: lab_name,
+                        permit_id: permit_id,
+                        email: email,
+                        phone: phone,
+                        password:password
+                    })
+                    .then(function (response) {
+                        console.log(response.data.message);
+                        //Update hooks accordingly 
+                        setLoading(false)
+                        setSuccess(response.data.message)
+                    
+                        //Set Hooks to Empty the Fields after save
+                        setEmail(''); setName(''); setPassword(''); setPhone(''); setPermit('');
+                    })
+                    .catch(function (error) {
+                        console.log(error.message);
+                        setLoading(false)
+                        setFailure(error.message);
+                    });
+
+            }//End submit
+            return ( 
+                <div className="form">
+            
+                    <Section>
+                
+                    {loading  && <div className="loading"> Please Wait..</div>}
+                    {success && <div className="success"> {success}</div>}  
+                    {failure && <div className="failure"> { failure}</div>}  
+                        <form onSubmit={submit} className="card shadow p-3 pt-4">
+                            <h1>Register Lab</h1>
+                            <div className="card-body">
+                        <input type="text" placeholder="Enter Lab Name" value={lab_name}
+                                    onChange={(e) => setName(e.target.value)} required
+                                className="form-control"/> <br />
+                    
+                        <input type="text" placeholder="Enter Permit ID" value={permit_id}
+                                    onChange={(e) => setPermit(e.target.value)} required
+                                className="form-control"/> <br />
+                        
+                        <input type="email" placeholder="Enter Email" value={email}
+                                    onChange={(e) => setEmail(e.target.value)} required
+                                    className="form-control" /> <br />
+                        
+                        <input type="tel" placeholder="Enter Phone" value={phone}
+                                    onChange={(e) => setPhone(e.target.value)} required
+                                className="form-control"/> <br />
+                    
+                        <input type="password" placeholder="Enter Password" value={password}
+                                    onChange={(e) => setPassword(e.target.value)} required
+                                className="form-control"/> <br />
+
+                        <button className="btn btn-dark">Create Account</button>
+                            </div>
+                            <Link to="/signin">Already have an Account, Login</Link>
+                        </form>
+                    </Section>
+                </div>
+            );
+        }
+        
+        export default Signup;
+        //This is a styled component  to position the form
+        const Section = styled.section`
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            top: 50px;
+            overflow: auto;
+        `
 
 
 
 
+Now Run and Access SignUp    http://127.0.0.1:3000/signup  <br>
+![Alt text](image-3.png)
 
 
 
+### Step 2
+In this step we create a Signin.jsx component <br>
+Open your Signin.jsx and write below code.
+
+      
+    // Imports
+    import React, { useState } from "react";
+    import styled from "styled-components";
+    import { Link, useNavigate } from 'react-router-dom';
+    import axiosInstance from "../helpers/axiosInstance";
+
+    const Signin = () => {
+        //navigate used in page redirection
+        const navigate = useNavigate();
+        //States - Hooks
+        const [email, setEmail] = useState(null);
+        const [password, setPassword] = useState(null);
+        const [loading, setLoading] = useState(false);
+        const [success, setSuccess] = useState(null);
+        const [failure, setFailure] = useState(null);
+
+        //Action when submit button is pressed
+        const submit = (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setSuccess(null);
+            setFailure(null);
+            console.log("Submitting");
+
+            //Use Axios instance to post data to API
+            axiosInstance.post('/labsignin', {
+                email: email,
+                password: password
+            })
+            .then(function (response) {
+                console.log("Response received:", response.data);
+                setLoading(false); //update hook
+                //Handle response
+                if (response.data && response.data.member && response.data.access_token) {
+                    //Above - Check that data is available
+                    console.log("Login successful:", response.data.member);
+                    //Save Data to Local Storage
+                    localStorage.setItem("lab_id", response.data.member.lab_id);
+                    localStorage.setItem("lab_name", response.data.member.lab_name);    
+                    localStorage.setItem("access_token", response.data.access_token);
+                    setSuccess(response.data.member); //update success hook
+
+                    navigate("/"); // use navigate to Redirect to main content
+                } else {
+                    //Login has failed
+                    console.log("Login Failed, No token received");
+                    setFailure("Login Failed, No token received");
+                }
+            })
+            .catch(function (error) {
+                console.error("Error occurred:", error.message);
+                setLoading(false);//update hook
+                setFailure(error.message); //update hook
+            });
+        }
+
+        return (
+            <div className="form">
+                <Section>
+                    {loading && <div className="text-warning">Please Wait...</div>}
+                    {success && <div className="text-success">{success.lab_name} logged in successfully</div>}
+                    {failure && <div className="text-danger">{failure}</div>}
+                    <form onSubmit={submit} className="card shadow p-3 pt-4">
+                        <h1>Login Lab</h1>
+                        <div className="card-body">
+                            <input
+                                type="email"
+                                placeholder="Enter Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="form-control"
+                            />
+                            <br />
+                            <input
+                                type="password"
+                                placeholder="Enter Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="form-control"
+                            />
+                            <br />
+                            <button className="btn btn-dark" type="submit">Login Account</button>
+                        </div>
+                        <Link to="/signup">Don't have an Account? Create one</Link>
+                    </form>
+                </Section>
+            </div>
+        );
+    }
+
+    export default Signin;
+    //This is a styled component  to position the form
+    const Section = styled.section`
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        top: 50px;
+    `;
 
 
 
+Run and Access Signin    http://127.0.0.1:3000/signin <br>
+Test after successul Login, it navigates to Or Dashboard  with SIdebar, Topbar and MainContent <br>
+![Alt text](image-4.png)
 
 
 
+After doing the Login and Confirm it takes you to Dashboard on successful Login, Open the TopBar.jsx <br>
 
+Access lab_name from local storage, Add This Code below the TopBar Component Function defination
+
+       //access labname from top bar
+       const lab_name = localStorage.getItem("lab_name")
+
+
+Then update the Logged in User from a static user to a dynamic user by binding the lab_name
+
+        span>User: { lab_name }</span>
+
+
+Your Complete and Updated TopBar.jsx looks like below
+
+        //Imports
+        import styled from "styled-components"
+        import { AiOutlineAppstore, AiFillBell } from "react-icons/ai"
+        import { AiFillCalendar } from 'react-icons/ai';
+        import Avatar from "../images/icon.png"
+        const TobBar = () => {
+            //access labname from top bar 
+            const lab_name = localStorage.getItem("lab_name")  //******ADDED THIS LINE******
+            return (  
+                <Nav>
+                <div className="admin">
+                        Admin Portal          
+                    </div>    
+
+                    <div className="content">
+                        <div className="date">
+                            <AiFillCalendar />
+                            {/* *******UPDATED BELOW******* */}
+                            <span>User: { lab_name }</span>  
+                        </div>
+
+                        <div className="icon">
+                            <AiOutlineAppstore />
+                            <span>/</span>
+                            <AiFillBell />
+                            <div className="image">
+                                <img src={Avatar} alt=""/>
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                </Nav>
+            );
+        }
+        export default TobBar;
+        //NB: The styled Component below was not affected or changed. ONLY 2 lines indicated with *** Comments above were affected
+        const Nav = styled.nav`
+           ....
+        `
+
+
+
+### Step 3
+We create a component to help us check if user is logged in or Not <br>
+IN helpers Folder, Create a File named CheckSession.jsx and write below code.
+
+    import { useEffect } from "react"
+    import { useNavigate } from "react-router-dom"
+
+    const CheckSession = () => {
+        const navigation = useNavigate()//**
+            //useEffect runs at least  once when page loads   
+            // THis Code check from Local Storage if below 3 variables arew present
+            const lab_name = localStorage.getItem("lab_name")
+            const lab_id = localStorage.getItem("lab_id")
+            const access_token = localStorage.getItem("access_token")
+
+            //If they are present/Not Empty, it returns them.
+            //If they are not Present/Empty it Goes to /signin
+            useEffect(() => {
+                //check if above are empty
+                if (!lab_name && !lab_id && !access_token) {
+                    console.log("Works")
+                    localStorage.clear();
+                    return navigation("/signin")//Go to sign
+                }
+            }, [lab_name, lab_id, access_token, navigation]); //Return them
+        
+        //return your variables
+        return {lab_name, lab_id, access_token}
+    }
+    
+    export default CheckSession;
+    //ANy COmpone tthat uses this CheckSession will receive the lab_name, lab_id, access_token
+    //If a User is logged in,ELse it will navigate to signin
+    //We will be using this Component to check if user is logged in or not.
+
+
+
+To test that above code Go to MainContent and add below code, Just below the Defination of your component<br>
+
+        import CheckSession from '../helpers/CheckSession';   //Import this
+        const MainContent = () => {   //This is your MainContent Arrow Functio
+            
+            //Check if user is logged, Use  CheckSession()
+            const { lab_name, lab_id, access_token } = CheckSession()  //Add This
+
+
+Test by Accessing the MainContent    http://127.0.0.1:3000/   when the user is not Logged in and when user is logged in - What do you Observe? <br>
+
+### Step 4
+In the Next steps we work on remaining Components <br>
+The Components such as AddTests, AddNurses etc will need to access the API, Recall that these APIS requird an access_token which is usually generated upon user login. <br><br>
+
+
+Our axiosInstance.jsx we created does not provide an access token to the API and it was not needed for SIgnup and Signin COmponents. But for othet APIs the access_token is required, hence we create a new axioInstance that provide the APIs with access token. <br>
+
+In helpers Folder, Create a File named axiosIntanceToken.jsx and write below code.
+
+
+        // Import axios
+        import axios from 'axios';
+
+        // Retrieve the access token from localStorage
+        const access_token = localStorage.getItem("access_token");
+        console.log("Testing");
+        console.log("Token in instance: " + access_token);
+
+        // Create an axios instance
+        const axiosInstance = axios.create({
+        baseURL: 'https://pebu.pythonanywhere.com/api', // Replace with your API's base URL
+        timeout: 30000, // Adjust the timeout as needed (in milliseconds)
+        headers: {
+            'Content-Type': 'application/json', // Set the default content type for requests
+            'Authorization': `Bearer ${access_token}` // Provide access_token as Bearer
+        },
+        });
+
+        // Export the axios instance
+        export default axiosInstance;
+
+
+
+NB: The two axiosInstances Created are more less the same, But one of them (axiosInstanceToken) allows access token to be passed.
+<br>
+
+
+### Step 5
+In this step, we create the user Profile, This will show details of the Logged in user. <br>
+Open/Create Profile.jsx and write below code.
+
+        // Imports
+        import React, { useState, useEffect } from 'react';
+        import axiosInstanceToken from '../helpers/axiosInstanceToken';
+        import CheckSession from '../helpers/CheckSession';
+        import Layout from '../helpers/Layout';
+        import Main from '../styles/Main';
+        const Profile = () => {
+
+            //Check if user is logged, Use  CheckSession()
+            const { lab_name, lab_id, access_token } = CheckSession()
+
+            //Hooks
+            const [user_details, setDetails] = useState({}) //Empty
+            const [loading, setLoading] = useState(true)
+            const [error, setError] = useState(null)
+
+            //Access labprofile Endpoint providing the body with an ID.
+            useEffect(() => {
+                axiosInstanceToken.post("/labprofile", {
+                    lab_id: lab_id
+                })
+                    .then(function (response) {
+
+                        //Update Hooks
+                        console.log(response.data.message);
+
+                        //setDetails is now Updated   meaning user_details has data.
+                        setDetails(response.data.message)
+                        setLoading(false) //Stop the Loading Bar
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        setError(error.message)// Update Erorr Hook
+                        setLoading(false) //Stop the Loaidng Bar
+                })//end catch
+            }, [lab_id]);// end useeffect
+
+
+            //if user_details is empty, Returns True/False
+            const boolean = Object.keys(user_details).length > 0
+            
+            return ( 
+                <div>
+                    <Layout/>
+                    <Main>
+                        <div className="main">
+                            <h1>Profile</h1>
+                            {loading && <div className="text-warning">Loading ... </div>}
+                            {error && <div className="text-danger"> Error occured. Try Later </div>}
+                            {
+                                boolean ? (  //If Not Empty, show the details, (Bind them)
+                                    <div className="card shadow card-body m-3 text-start col-md-6">
+                                        <span> <b>ID:</b>  {user_details.lab_id}</span> <br />
+                                        <span className='text-warning'> <b>Permit: </b> {user_details.permit_id}</span><br />
+                                        <span className='text-dark'> <b>Tel:</b>  {user_details.phone}</span><br />
+                                        <span className='text-dark'> <b>Registration:</b>  {user_details.reg_date}</span><br />
+                                        <br />
+                            
+                                    </div>
+                                ) : (
+                                    <span>No Profile Data</span>
+                                )
+                            }
+
+                        </div>
+                    </Main>
+                </div>
+            
+            );
+        }
+        
+        export default Profile;
+
+
+Run and Access  http://localhost:3000/profile
+![Alt text](image-7.png)
+
+
+### Step 6
+In this step, we create the AddTests.jsx, Open/Create your AddTests.jsx and add below code.
+
+        // Imports
+        import { useState } from "react";
+        import Main from "../styles/Main";
+        import Layout from "../helpers/Layout";
+        import axiosInstanceToken from "../helpers/axiosInstanceToken";  //Import the axiosInstanceToken
+        import CheckSession from "../helpers/CheckSession";
+        const AddTests = () => {
+                
+                //Check if User isLogged in 
+                const { lab_name, lab_id, access_token } = CheckSession()
+                //The lab_id received above will be used in our POST body later
+                //Thi will help in knowing which lab posted the test.
+
+                //Hooks
+                const [test_name, setName] = useState(null)
+                const [test_description, setDescription] = useState(null)
+                const [test_cost, setCost] = useState(null)
+                const [test_discount, setDiscount] = useState(null)
+                const [loading, setLoading] = useState(false)
+                const [success, setSuccess] = useState(null)
+                const [failure, setFailure] = useState(null)
+            
+                //When usbmit button is pressed
+                const submit = (e) => {
+                    e.preventDefault();
+                    //Update Hooks
+                    setLoading(true)
+                    setSuccess(null)
+                    setFailure(null)
+                    console.log("submitting")
+                    //Post and Post data using axiosInstance with Token
+                    axiosInstanceToken.post('/addlabtests', {
+                        lab_id: lab_id,
+                        test_name: test_name,
+                        test_description: test_description,
+                        test_cost: test_cost,
+                        test_discount: test_discount
+                    })
+                        .then(function (response) {
+                            console.log(response.data);
+                            //Update Hooks - Loading and Success
+                            setLoading(false)
+                            setSuccess(response.data.message)
+                            setName(''); setDescription(''); setCost(''); setDiscount(''); //EMpty Hooks
+                            //setEmail(''); setName(''); setPassword(''); setPhone(''); setPermit('');
+                        })
+                        .catch(function (error) {
+                            //Update Loading and Error Hooks
+                            console.log(error.message);
+                            setLoading(false)
+                            setFailure(error.message);
+                        });
+
+                }//End submit
+
+                return (
+                    <div>
+                        <Layout />
+                        <Main>
+                            <form onSubmit={submit} className="card shadow p-4">
+                                <div className="card-body">
+                                    {loading && <div className="text-warning"> Please Wait..</div>}
+                                    {success && <div className="text-success"> {success}</div>}
+                                    {failure && <div className="text-danger"> {failure}</div>}
+                                    <input type="text" placeholder="Enter Test Name" value={test_name}
+                                        onChange={(e) => setName(e.target.value)} required
+                                        className="form-control" /> <br />
+                                        
+                                    <input type="text" placeholder="Enter Test Desc" value={test_description}
+                                        onChange={(e) => setDescription(e.target.value)} required
+                                        className="form-control" /> <br />
+                                        
+                                    <input type="text" placeholder="Enter Test Cost" value={test_cost}
+                                        onChange={(e) => setCost(e.target.value)} required
+                                        className="form-control" /> <br />
+                                        
+                                    <input type="text" placeholder="Enter Test Discount" value={test_discount}
+                                        onChange={(e) => setDiscount(e.target.value)} required
+                                        className="form-control" /> <br />
+                        
+                                        
+                                    <button className="btn btn-dark">Add Test</button>
+                                </div>
+                            </form>
+                        </Main>
+                    </div>
+                
+                );
+
+        }
+
+        export default AddTests;
+
+
+
+Run and Test http://localhost:3000/addtests  <br>
+
+![Alt text](image-5.png)
+
+
+
+### Step 7
+In this step, we view the lab tests, Open/Create LabTests.jsx  <br>
+Write below code to read all lab tests from API. <br>
+
+        // Imports
+        import { useEffect } from "react"
+        import { useState } from "react"
+        import axiosInstanceToken from "../helpers/axiosInstanceToken"
+        import CheckSession from "../helpers/CheckSession"
+        import Layout from "../helpers/Layout"
+        import Main from "../styles/Main"
+
+        const LabTests = () => {
+            //Check if user is logged in 
+            const { lab_name, lab_id, refresh_token } = CheckSession()
+
+            //Hooks
+            const [lab_tests, setLabTests] = useState(null) //Empty
+            const [loading, setLoading] = useState(true)
+            const [error, setError] = useState(null)
+            const [filteredData, setFilteredData] = useState([]); 
+
+        
+            //Search
+            const [query, setQuery] = useState('') 
+        
+            //Access View Lab est API using axiosInstanceToken,
+            //Also provide the lab_id so as to get the lab tests for the logged in lab
+            useEffect(() => {
+                axiosInstanceToken.post("/viewlabtests", {
+                    lab_id: lab_id  //Pass lab id in the body
+                })
+                    .then(function (response) {
+                        //Update Hooks
+                        console.log(response.data);
+                        setLabTests(response.data)//important
+                        setFilteredData(response.data);
+                        setLoading(false)
+                    })
+                    .catch(function (error) {
+                        //Update Hooks
+                        console.log(error);
+                        setError(error.message)
+                        setLoading(false)
+                })//end catch
+            }, [lab_id]);// end useeffect
+
+        
+            //Add this to handle live search
+            const handleLiveSearch = (value) => {
+            //ABove value comes from the typing 
+            setQuery(value); //query has something as long someone is searching
+            //check if lab tests are not empty
+            const filtered = lab_tests && lab_tests.filter((item) =>
+            item.test_name.toLowerCase().includes(value.toLowerCase())
+            );
+            //update setFilteredData with filtered items
+            setFilteredData(filtered);
+        };//end
+
+            return ( 
+                <div>
+                    <Layout />
+                    <Main>
+                        {/* add handleLiveSearch function onChange below */}
+                        <input type="text" placeholder="Search a test name" value={query}
+                            onChange={(e) => handleLiveSearch(e.target.value)}
+                        className = "form-control" /> 
+                        
+                        <table className="table table-striped bg-light p-5 m-1">
+                            {loading && <div className="text-warning">Loading ... </div>}
+                            {error && <div className="text-danger"> Error occured. Try Later </div>}
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Cost</th>
+                                <th>Discount</th>
+                            
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {/* add this filteredData */}
+                            {filteredData && filteredData.map((test) => (
+                                <tr className="mt-5" key={test.test_id}>        
+                                    <td>{test.test_name}</td>
+                                    <td>{test.test_description}</td>
+                                    <td>{test.test_cost}</td>
+                                    <td>{test.test_discount}</td>
+                                </tr>    
+                            ))}
+                            </tbody>
+                        </table>
+                    </Main>
+                </div>
+                
+            );
+            }//End component
+            
+        export default LabTests;
+
+
+
+Run and Access http://localhost:3000/viewtests
+
+![Alt text](image-6.png)
+
+
+### Step 8
+In this step, we will do the Add Nurses Component <br>
+Open/Create AddNurses.jsx  and write below code.
+
+        // Import
+        import { useState } from "react";
+        import Main from "../styles/Main";
+        import Layout from "../helpers/Layout";
+        import axiosInstance from "../helpers/axiosInstanceToken";
+        import CheckSession from "../helpers/CheckSession";
+
+        const AddNurses = () => {
+            //Check if user is logged in
+            const { lab_name, lab_id, refresh_token } = CheckSession()
+
+            //Hooks
+            const [surname, setName] = useState(null)
+            const [others, setOthers] = useState(null)
+            const [gender, setGender] = useState(null)
+            const [email, setEmail] = useState(null)
+            const [phone, setPhone] = useState(null)
+            const [loading, setLoading] = useState(false)
+            const [success, setSuccess] = useState(null)
+            const [failure, setFailure] = useState(null)
+            const [selected, setSelected] = useState('')
+            
+            //handle select for gender
+            const handleSelect = (e) => {
+                setSelected(e.target.value) //Update hook based on Selected radio button   
+            }//end
+            console.log("Selected  " + selected)
+            
+
+            //submit - WHen submit is pressed
+                const submit = (e) => {
+                e.preventDefault();
+                //Ipdate Hooks
+                setLoading(true)
+                setSuccess(null)
+                setFailure(null)
+                console.log("submitting")
+                    //Post data to API and provide the Body including the Lab ID
+                    //The Lab ID is important to help the system know which lab the nurse added belong to
+                    axiosInstance.post('/addnurse', {
+                        lab_id: lab_id,
+                        surname: surname,
+                        others: others,
+                        email: email,
+                        gender: selected,
+                        phone: phone
+                    })
+                    .then(function (response) {
+                        //Update Hooks
+                        console.log(response.data);
+                        setLoading(false)
+                        setSuccess(response.data.message)
+                        setName(''); setGender(''); setEmail(''); setOthers(''); setOthers(''); //Set to Empty
+                    
+                    })
+                    .catch(function (error) {
+                        //Update Hooks
+                        console.log(error.message);
+                        setLoading(false)
+                        setFailure(error.message);
+                    });
+            }//End submit
+
+            return (
+                <div>
+                        <Layout/>
+                        <Main>
+                            <form onSubmit={submit} className="card shadow p-4">
+                                <div className="card-body">
+                                        {loading  && <div className="text-warning"> Please Wait..</div>}
+                                        {success && <div className="text-success"> {success}</div>}  
+                                        {failure && <div className="text-danger"> { failure}</div>} 
+                                        <input type="text" placeholder="Enter Name" value={surname}
+                                            onChange={(e) => setName(e.target.value)} required
+                                        className="form-control"/> <br /> 
+                                        
+                                        <input type="text" placeholder="Enter Others" value={others}
+                                            onChange={(e) => setOthers(e.target.value)} required
+                                        className="form-control"/> <br />
+                                    
+                                        <label htmlFor="">Your Gender</label><br />
+                                        <input type="radio" value='Male'
+                                        onChange={handleSelect}
+                                        checked={ selected ==='Male'} />  Male<br />
+                                
+                                        <input type="radio" value='Female'
+                                        onChange={handleSelect}
+                                        checked={ selected ==='Female'}/> Female<br />
+
+                                        
+                                        <input type="text" placeholder="Enter Email" value={email}
+                                            onChange={(e) => setEmail(e.target.value)} required
+                                        className="form-control"/> <br />
+                                        
+                                        <input type="text" placeholder="Enter Phone" value={phone}
+                                            onChange={(e) => setPhone(e.target.value)} required
+                                        className="form-control"/> <br />
+                                        
+                                        
+                                        <button className="btn btn-dark">Add Nurse</button>
+                                </div>
+                            </form>
+                        </Main>  
+                </div>
+                
+            );
+
+        }
+        
+
+        export default AddNurses;
+
+
+Run and Access  http://localhost:3000/addnurses 
+![Alt text](image-8.png)
+
+### Step 9
+In this step, we will retrieve the nurse saved, Open/Create Nurses.jsx and write below code.
+
+        // Import
+        import { useEffect } from "react"
+        import { useState } from "react"
+        import axiosInstance from "../helpers/axiosInstanceToken"
+        import CheckSession from "../helpers/CheckSession"
+        import Layout from "../helpers/Layout"
+        import Main from "../styles/Main"
+        const Nurses = () => {
+
+            // Check if user is logged in
+            const { lab_name, lab_id, refresh_token } = CheckSession()
+
+            //hooks
+            const [nurses, setNurses] = useState(null) //Empty
+            const [loading, setLoading] = useState(true)
+            const [error, setError] = useState(null)
+
+            //Add this  below ot hold filtered data later
+            const [filteredData, setFilteredData] = useState([]); 
+
+            //Search
+            const [query, setQuery] = useState('')  // null
+            //Access viewnurses API endpoint proving the lab_id to view Nurses for  given lab id
+            useEffect(() => {
+                axiosInstance.post("/viewnurses", {
+                    lab_id: lab_id
+                })
+                    .then(function (response) {
+                        //Update Hooks
+                        console.log(response.data);
+                        setNurses(response.data)//important
+                        setFilteredData(response.data);
+                        setLoading(false)
+                    })
+                    .catch(function (error) {
+                        //Update Hooks
+                        console.log(error);
+                        setError(error.message)
+                        setLoading(false)
+                })//end catch
+            }, [lab_id]);// end useEffect
+
+        
+            //add this to handle live search
+            const handleLiveSearch = (value) => {
+            //ABove value comes from the typing 
+            setQuery(value); //query has something as long someone is searching
+            //check if lab tests are not empty
+            const filtered = nurses && nurses.filter((item) =>
+                item.surname.toLowerCase().includes(value.toLowerCase()) ||
+                item.phone.toLowerCase().includes(value.toLowerCase()) 
+            );
+                //update setFilteredData with filtered items
+            setFilteredData(filtered);
+        };//end
+
+            return (
+                <div>
+                    <Layout />
+                    <Main>
+                        {/* add handleLiveSearch function onChange below */}
+                        <input type="text" placeholder="Search a surname/Phone" value={query}
+                            onChange={(e) => handleLiveSearch(e.target.value)}
+                            className="form-control" />
+                        
+                        <table className="table table-striped bg-light p-5 m-1">
+                            {loading && <div className="text-warning">Loading ... </div>}
+                            {error && <div className="text-danger"> Error occured. Try Later </div>}
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Others</th>
+                                    <th>Phone</th>
+                                    <th>Gender</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* add this filteredData */}
+                                {filteredData && filteredData.map((nurse) => (
+                                    <tr className="mt-5" key={nurse.nurse_id}>
+                                        <td>{nurse.surname}</td>
+                                        <td>{nurse.others}</td>
+                                        <td>{nurse.phone}</td>
+                                        <td>{nurse.gender}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    
+                    </Main>
+                </div>
+            );
+            //function
+            function handleDelete(nurse_id) {    
+                const confirmed = window.confirm('Are you sure?');
+                if (confirmed) {
+                        console.log("Nurse id " + nurse_id) 
+                        Delete(nurse_id);
+                    }
+            }//end fun
+
+
+            function Delete(nurse_id) {
+                axiosInstance.delete(`/delete_nurse?nurse_id=${nurse_id}`)
+                    .then(function (response) {
+                        alert(response.data.message)
+                        //TODO reload nurses
+                    }).catch(function (error) {
+                        alert(error.message)
+                    })
+            }//end
+    
+        }
+        
+        export default Nurses
+
+Run and Access  http://localhost:3000/viewnurses
+![Alt text](image-9.png) 
 
 
 

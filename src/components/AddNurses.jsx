@@ -1,14 +1,14 @@
+// Import
 import { useState } from "react";
-import styled from "styled-components"
-import axios from "axios";
 import Main from "../styles/Main";
 import Layout from "../helpers/Layout";
 import axiosInstance from "../helpers/axiosInstanceToken";
 import CheckSession from "../helpers/CheckSession";
 
 const AddNurses = () => {
-    //Protect
+    //Check if user is logged in
     const { lab_name, lab_id, refresh_token } = CheckSession()
+
     //Hooks
     const [surname, setName] = useState(null)
     const [others, setOthers] = useState(null)
@@ -20,22 +20,24 @@ const AddNurses = () => {
     const [failure, setFailure] = useState(null)
     const [selected, setSelected] = useState('')
     
-    //handle select
+    //handle select for gender
     const handleSelect = (e) => {
         setSelected(e.target.value) //Update hook based on Selected radio button   
     }//end
     console.log("Selected  " + selected)
     
-    const {instance}  = axiosInstance()
-       //submit
-         const submit = (e) => {
+
+       //submit - WHen submit is pressed
+        const submit = (e) => {
         e.preventDefault();
+        //Ipdate Hooks
         setLoading(true)
         setSuccess(null)
         setFailure(null)
         console.log("submitting")
-            //Post
-            instance.post('/addnurse', {
+            //Post data to API and provide the Body including the Lab ID
+            //The Lab ID is important to help the system know which lab the nurse added belong to
+            axiosInstance.post('/addnurse', {
                 lab_id: lab_id,
                 surname: surname,
                 others: others,
@@ -44,13 +46,15 @@ const AddNurses = () => {
                 phone: phone
             })
             .then(function (response) {
+                //Update Hooks
                 console.log(response.data);
                 setLoading(false)
                 setSuccess(response.data.message)
-                setName(''); setGender(''); setEmail(''); setOthers(''); setOthers('');
+                setName(''); setGender(''); setEmail(''); setOthers(''); setOthers(''); //Set to Empty
             
             })
             .catch(function (error) {
+                //Update Hooks
                 console.log(error.message);
                 setLoading(false)
                 setFailure(error.message);

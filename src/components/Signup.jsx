@@ -1,10 +1,9 @@
 import { useState } from "react";
-import axios from "axios"
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import axiosInstance from "../helpers/axiosInstance";
 const Signup = () => {
-    //hooks
+    //States - Hooks
     const [lab_name, setName] = useState(null)
     const [permit_id, setPermit] = useState(null)
     const [email, setEmail] = useState(null)
@@ -14,14 +13,14 @@ const Signup = () => {
     const [success, setSuccess] = useState(null)
     const [failure, setFailure] = useState(null)
 
-    //Validation
+    //Action when submit button is pressed
     const submit = (e) => {
         e.preventDefault();
         setLoading(true)
         setSuccess(null)
         setFailure(null)
         console.log("submitting")
-            //Post
+            //Use Axios instance to post data to API
             axiosInstance.post('/labsignup', {
                 lab_name: lab_name,
                 permit_id: permit_id,
@@ -31,12 +30,11 @@ const Signup = () => {
             })
             .then(function (response) {
                 console.log(response.data.message);
+                //Update hooks accordingly 
                 setLoading(false)
                 setSuccess(response.data.message)
-                setTimeout((function () {
-                    setSuccess('')
-                }), 2000)
-                
+             
+                //Set Hooks to Empty the Fields after save
                 setEmail(''); setName(''); setPassword(''); setPhone(''); setPermit('');
             })
             .catch(function (error) {
@@ -87,6 +85,7 @@ const Signup = () => {
 }
  
 export default Signup;
+//This is a styled component  to position the form
 const Section = styled.section`
      display: flex;
      flex-direction: column;

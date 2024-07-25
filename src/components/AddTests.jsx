@@ -1,12 +1,16 @@
+// Imports
 import { useState } from "react";
 import Main from "../styles/Main";
 import Layout from "../helpers/Layout";
-import axiosInstance from "../helpers/axiosInstanceToken";
+import axiosInstanceToken from "../helpers/axiosInstanceToken";  //Import the axiosInstanceToken
 import CheckSession from "../helpers/CheckSession";
 const AddTests = () => {
-    //Protect
-    const { lab_name, lab_id, refresh_token } = CheckSession()
-  
+        
+        //Check if User isLogged in 
+        const { lab_name, lab_id, access_token } = CheckSession()
+        //The lab_id received above will be used in our POST body later
+        //Thi will help in knowing which lab posted the test.
+
         //Hooks
         const [test_name, setName] = useState(null)
         const [test_description, setDescription] = useState(null)
@@ -16,16 +20,16 @@ const AddTests = () => {
         const [success, setSuccess] = useState(null)
         const [failure, setFailure] = useState(null)
      
-        //submit
-      const {instance}  = axiosInstance()
+        //WHen usbmit button is pressed
         const submit = (e) => {
             e.preventDefault();
+            //Update Hooks
             setLoading(true)
             setSuccess(null)
             setFailure(null)
             console.log("submitting")
-            //Post
-            instance.post('/addlabtests', {
+            //Post and Post data using axiosInstance with Token
+            axiosInstanceToken.post('/addlabtests', {
                 lab_id: lab_id,
                 test_name: test_name,
                 test_description: test_description,
@@ -34,12 +38,14 @@ const AddTests = () => {
             })
                 .then(function (response) {
                     console.log(response.data);
+                    //Update Hooks - Loading and Success
                     setLoading(false)
                     setSuccess(response.data.message)
-                    setName(''); setDescription(''); setCost(''); setDiscount(''); 
+                    setName(''); setDescription(''); setCost(''); setDiscount(''); //EMpty Hooks
                     //setEmail(''); setName(''); setPassword(''); setPhone(''); setPermit('');
                 })
                 .catch(function (error) {
+                    //Update Loading and Error Hooks
                     console.log(error.message);
                     setLoading(false)
                     setFailure(error.message);

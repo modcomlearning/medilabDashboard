@@ -18,10 +18,10 @@ const MyBookings = () => {
     const [invoice_no, setInvoice] = useState(null);
     const [query, setQuery] = useState(''); // Search query
     
-    const { instance } = axiosInstance();
+    // const { instance } = axiosInstance();
 
     useEffect(() => {
-        instance.post("/viewlabookings", { lab_id: lab_id })
+        axiosInstance.post("/viewlabookings", { lab_id: lab_id })
             .then(function (response) {
                 console.log("Full Response: ", response);
                 console.log("Data: ", response.data);

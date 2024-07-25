@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components"
-import Main from "../styles/Main";
 import axiosInstance from "../helpers/axiosInstanceToken";
 import CheckSession from "../helpers/CheckSession";
 import Modal from 'react-modal'
@@ -23,11 +21,11 @@ const NursesDialog = ({ isOpen, onClose, invoice_no }) => {
     }//end
 
     //Allocate  
-    const { instance } = axiosInstance()
+    // const { instance } = axiosInstance()
     const Allocate = (selectedId, invoice_no) => {
             setLoading(true)
             //if selected id is empty
-            instance.post("/taskallocation", {
+            axiosInstance.post("/taskallocation", {
                 nurse_id: selectedId,
                 invoice_no:invoice_no
             }).then(function (response) {
@@ -44,7 +42,7 @@ const NursesDialog = ({ isOpen, onClose, invoice_no }) => {
     
   
     useEffect(() => {
-        instance.post("/viewnurses", {
+        axiosInstance.post("/viewnurses", {
             lab_id: lab_id
         }).then(function (response) {
             console.log("Response:", response);

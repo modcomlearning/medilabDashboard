@@ -1,7 +1,11 @@
 
 import Main from '../styles/Main';
 import Layout from '../helpers/Layout';
+import CheckSession from '../helpers/CheckSession';
 const MainContent = () => {
+    
+     //Check if user is logged, Use  CheckSession()
+    const { lab_name, lab_id, access_token } = CheckSession()
 
     return ( 
         <div>

@@ -1,3 +1,4 @@
+// Import
 import { useEffect } from "react"
 import { useState } from "react"
 import axiosInstance from "../helpers/axiosInstanceToken"
@@ -5,28 +6,34 @@ import CheckSession from "../helpers/CheckSession"
 import Layout from "../helpers/Layout"
 import Main from "../styles/Main"
 const Nurses = () => {
-     //Protect
+
+    // Check if user is logged in
     const { lab_name, lab_id, refresh_token } = CheckSession()
+
     //hooks
     const [nurses, setNurses] = useState(null) //Empty
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    //Add this  below
+
+    //Add this  below ot hold filtered data later
     const [filteredData, setFilteredData] = useState([]); 
+
     //Search
     const [query, setQuery] = useState('')  // null
-    const {instance}  = axiosInstance()
+    //Access viewnurses API endpoint proving the lab_id to view Nurses for  given lab id
     useEffect(() => {
-        instance.post("/viewnurses", {
+        axiosInstance.post("/viewnurses", {
             lab_id: lab_id
         })
             .then(function (response) {
+                //Update Hooks
                 console.log(response.data);
                 setNurses(response.data)//important
                 setFilteredData(response.data);
                 setLoading(false)
             })
             .catch(function (error) {
+                //Update Hooks
                 console.log(error);
                 setError(error.message)
                 setLoading(false)
@@ -34,7 +41,7 @@ const Nurses = () => {
     }, [lab_id]);// end useEffect
 
  
-    //add this
+    //add this to handle live search
     const handleLiveSearch = (value) => {
        //ABove value comes from the typing 
     setQuery(value); //query has something as long someone is searching
@@ -63,7 +70,6 @@ const Nurses = () => {
                         <tr>
                             <th>Name</th>
                             <th>Others</th>
-                            {/* <th>Email</th> */}
                             <th>Phone</th>
                             <th>Gender</th>
                         </tr>
@@ -74,12 +80,8 @@ const Nurses = () => {
                             <tr className="mt-5" key={nurse.nurse_id}>
                                 <td>{nurse.surname}</td>
                                 <td>{nurse.others}</td>
-                                {/* <td>{nurse.email}</td> */}
                                 <td>{nurse.phone}</td>
                                 <td>{nurse.gender}</td>
-                                <td><button className="btn btn-danger btn-sm"
-                                    onClick={() => handleDelete(nurse.nurse_id)}>Remove</button></td>
-                                <td><button className="btn btn-warning btn-sm">Update</button></td>
                             </tr>
                         ))}
                     </tbody>
@@ -99,7 +101,7 @@ const Nurses = () => {
 
 
     function Delete(nurse_id) {
-        instance.delete(`/delete_nurse?nurse_id=${nurse_id}`)
+        axiosInstance.delete(`/delete_nurse?nurse_id=${nurse_id}`)
             .then(function (response) {
                 alert(response.data.message)
                 //TODO reload nurses

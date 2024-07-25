@@ -1,16 +1,20 @@
+// Imports
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from "../helpers/axiosInstance";
 
 const Signin = () => {
+    //navigate used in page redirection
     const navigate = useNavigate();
+    //States - Hooks
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(null);
     const [failure, setFailure] = useState(null);
 
+    //Action when submit button is pressed
     const submit = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -18,31 +22,35 @@ const Signin = () => {
         setFailure(null);
         console.log("Submitting");
 
+        //Use Axios instance to post data to API
         axiosInstance.post('/labsignin', {
             email: email,
             password: password
         })
         .then(function (response) {
             console.log("Response received:", response.data);
-            setLoading(false);
-
+            setLoading(false); //update hook
+            //Handle response
             if (response.data && response.data.member && response.data.access_token) {
+                //Above - Check that data is available
                 console.log("Login successful:", response.data.member);
+                //Save Data to Local Storage
                 localStorage.setItem("lab_id", response.data.member.lab_id);
                 localStorage.setItem("lab_name", response.data.member.lab_name);    
                 localStorage.setItem("access_token", response.data.access_token);
-                setSuccess(response.data.member);
+                setSuccess(response.data.member); //update success hook
 
-                navigate("/"); // Redirect to main content
+                navigate("/"); // use navigate to Redirect to main content
             } else {
-                console.log("Login failed, no token received");
-                setFailure("Login failed, no token received");
+                //Login has failed
+                console.log("Login Failed, No token received");
+                setFailure("Login Failed, No token received");
             }
         })
         .catch(function (error) {
             console.error("Error occurred:", error.message);
-            setLoading(false);
-            setFailure(error.message);
+            setLoading(false);//update hook
+            setFailure(error.message); //update hook
         });
     }
 
@@ -83,7 +91,7 @@ const Signin = () => {
 }
 
 export default Signin;
-
+//This is a styled component  to position the form
 const Section = styled.section`
     display: flex;
     flex-direction: column;
