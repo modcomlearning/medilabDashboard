@@ -859,7 +859,7 @@ To Post data to API, we use axios  https://axios-http.com/docs/intro  <br>
 
 First install axios, In Terminal change directory to your application folder and use below command.
 
-  sudo npm install axios
+     sudo npm install axios
 
 
 In helpers Folder, Create a File named axiosInstance.jsx and write below code
@@ -988,10 +988,11 @@ Now Run and Access SignUp    http://127.0.0.1:3000/signup  <br>
 ![Alt text](image-3.png)
 
 
+Read on LocalStorage as it will be used in Next Step   https://www.freecodecamp.org/news/use-local-storage-in-modern-applications/
 
 ### Step 2
 In this step we create a Signin.jsx component <br>
-Open your Signin.jsx and write below code.
+Open your Signin.jsx and write below code.   
 
       
     // Imports
@@ -1163,7 +1164,7 @@ Your Complete and Updated TopBar.jsx looks like below
 
 Run the Code and Access Signin, Signin with correct credentials <br>
 Observe in the dashboard the Logged in lab_name is displayed at the Top Right of the TopBar.
-An example below Screen shows Kim is the Lab Name Logged In.
+An example below Screen shows Kim is the Lab Name Logged In.  Try Signup and Signin with a New Lab and Observe if the TopBar will reflect the New Logged in Lab.
 
 ![Alt text](image-10.png)
 
