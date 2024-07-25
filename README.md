@@ -1161,6 +1161,12 @@ Your Complete and Updated TopBar.jsx looks like below
            ....
         `
 
+Run the Code and Access Signin, Signin with correct credentials <br>
+Observe in the dashboard the Logged in lab_name is displayed at the Top Right of the TopBar.
+An example below Screen shows Kim is the Lab Name Logged In.
+
+![Alt text](image-10.png)
+
 
 
 ### Step 3
@@ -1194,7 +1200,7 @@ IN helpers Folder, Create a File named CheckSession.jsx and write below code.
     }
     
     export default CheckSession;
-    //ANy COmpone tthat uses this CheckSession will receive the lab_name, lab_id, access_token
+    //ANy Component that uses this CheckSession will receive the lab_name, lab_id, access_token
     //If a User is logged in,ELse it will navigate to signin
     //We will be using this Component to check if user is logged in or not.
 
