@@ -1,7 +1,7 @@
 // Import
 import { useEffect } from "react"
 import { useState } from "react"
-import axiosInstance from "../helpers/axiosInstanceToken"
+import axiosInstanceToken from "../helpers/axiosInstanceToken"
 import CheckSession from "../helpers/CheckSession"
 import Layout from "../helpers/Layout"
 import Main from "../styles/Main"
@@ -22,7 +22,7 @@ const Nurses = () => {
     const [query, setQuery] = useState('')  // null
     //Access viewnurses API endpoint proving the lab_id to view Nurses for  given lab id
     useEffect(() => {
-        axiosInstance.post("/viewnurses", {
+        axiosInstanceToken.post("/viewnurses", {
             lab_id: lab_id
         })
             .then(function (response) {
@@ -90,26 +90,7 @@ const Nurses = () => {
             </Main>
         </div>
     );
-       //function
-    function handleDelete(nurse_id) {    
-        const confirmed = window.confirm('Are you sure?');
-        if (confirmed) {
-                console.log("Nurse id " + nurse_id) 
-                Delete(nurse_id);
-            }
-    }//end fun
 
-
-    function Delete(nurse_id) {
-        axiosInstance.delete(`/delete_nurse?nurse_id=${nurse_id}`)
-            .then(function (response) {
-                alert(response.data.message)
-                //TODO reload nurses
-            }).catch(function (error) {
-                alert(error.message)
-            })
-    }//end
-    //Charts in JS,     Chart js, fusion charts 
 
 
 }

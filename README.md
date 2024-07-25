@@ -1676,7 +1676,7 @@ In this step, we will retrieve the nurses saved, Open/Create Nurses.jsx and writ
         // Import
         import { useEffect } from "react"
         import { useState } from "react"
-        import axiosInstance from "../helpers/axiosInstanceToken"
+        import axiosInstanceToken from "../helpers/axiosInstanceToken"
         import CheckSession from "../helpers/CheckSession"
         import Layout from "../helpers/Layout"
         import Main from "../styles/Main"
@@ -1697,7 +1697,7 @@ In this step, we will retrieve the nurses saved, Open/Create Nurses.jsx and writ
             const [query, setQuery] = useState('')  // null
             //Access viewnurses API endpoint proving the lab_id to view Nurses for  given lab id
             useEffect(() => {
-                axiosInstance.post("/viewnurses", {
+                axiosInstanceToken.post("/viewnurses", {
                     lab_id: lab_id
                 })
                     .then(function (response) {
@@ -1765,25 +1765,7 @@ In this step, we will retrieve the nurses saved, Open/Create Nurses.jsx and writ
                     </Main>
                 </div>
             );
-            //function
-            function handleDelete(nurse_id) {    
-                const confirmed = window.confirm('Are you sure?');
-                if (confirmed) {
-                        console.log("Nurse id " + nurse_id) 
-                        Delete(nurse_id);
-                    }
-            }//end fun
-
-
-            function Delete(nurse_id) {
-                axiosInstance.delete(`/delete_nurse?nurse_id=${nurse_id}`)
-                    .then(function (response) {
-                        alert(response.data.message)
-                        //TODO reload nurses
-                    }).catch(function (error) {
-                        alert(error.message)
-                    })
-            }//end
+        
     
         }
         
@@ -1793,6 +1775,273 @@ Run and Access  http://localhost:3000/viewnurses
 ![Alt text](image-9.png) 
 
 
+### Step 10
+In this step, we will do Bookings Component that helps us view the Bookings made from the Mobile Applications(Android).
+
+Open/Create MyBookings.jsx and write below Code.
+
+        // Imports
+        import { useEffect, useState } from "react";
+        import axiosInstanceToken from "../helpers/axiosInstanceToken";
+        import CheckSession from "../helpers/CheckSession";
+        import Layout from "../helpers/Layout";
+        import Main from "../styles/Main";
+        import NursesDialog from "./NursesDialog";
+
+        const MyBookings = () => {
+
+            // Check if user is logged in
+            const { lab_name, lab_id, refresh_token } = CheckSession();
+            
+            // Hooks
+            const [bookings, setBookings] = useState([]); // Empty
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [filteredData, setFilteredData] = useState([]); 
+            const [query, setQuery] = useState(''); // Search query
+            
+            //Access the viewlabookings Endpoint,Provide lab_id in the body to get only bookings for logged in lab
+            useEffect(() => {
+                axiosInstanceToken.post("/viewlabookings", { lab_id: lab_id })
+                    .then(function (response) {
+                        console.log("Full Response: ", response);
+                        console.log("Data: ", response.data);
+                        //Update Hooks
+                        setBookings(response.data); // important
+                        setFilteredData(response.data);
+                        setLoading(false);
+                    })
+                    .catch(function (error) {
+                        //Update Hooks
+                        console.log(error);
+                        setError(error.message);
+                        setLoading(false);
+                }); // end catch
+            }, [lab_id]); // end useEffect
+
+            // This will handle the Live Search
+            const handleLiveSearch = (value) => {
+                setQuery(value); // query has something as long someone is searching
+                const filtered = bookings && bookings.filter((item) =>
+                    item.appointment_date.toLowerCase().includes(value.toLowerCase()) ||
+                    item.invoice_no.toLowerCase().includes(value.toLowerCase())
+                );
+                setFilteredData(filtered);
+            };
+
+            return (
+                <div>
+                    <Layout />
+                    <Main>
+                        <input
+                            type="text"
+                            placeholder="Search a date/Invoice No"
+                            value={query}
+                            onChange={(e) => handleLiveSearch(e.target.value)}
+                            className="form-control"
+                        />
+                        
+                        <table className="table table-striped bg-light p-5 m-1">
+                            {loading && <div className="text-warning">Loading ... </div>}
+                            {error && <div className="text-danger"> Error occurred. Try Later </div>}
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Member</th>
+                                    <th>Where Taken</th>
+                                    <th>Test Name</th>
+                                    <th>Inv No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredData && filteredData.length > 0 ? (
+                                    filteredData.map((booking) => (
+                                        <tr className="mt-5" key={booking.book_id}>
+                                            <td>{booking.appointment_date}</td>
+                                            <td>{booking.appointment_time}</td>
+                                            <td>{booking.key.surname}</td>
+                                            <td>{booking.where_taken}</td>
+                                            <td>{booking.test_details.test_name}</td>
+                                            <td>{booking.invoice_no}</td>
+                                    
+                                        </tr>
+                                    ))
+                                ) : (
+                                    !loading && <tr><td colSpan="6" className="text-center">No bookings found</td></tr>
+                                )}
+                    
+                            </tbody>
+                        </table>
+                    </Main>
+                </div>
+            );
+        };
+
+        export default MyBookings;
+
+
+
+
+Run and Access   http://localhost:3000/mybookings 
+![Alt text](image-12.png)
+
+### Step 11
+In this section, we will add a Map Button in our bookings displayed, when this button is presses, it will open Google Maps and display the location of the person who placed the booking. <br>
+
+Add below function, You can add it below handleLiveSearch function.
+
+            // This will handle Open Map - Using available Latitude and Longitude
+            const handleOpenMap = (latitude, longitude) => {
+                const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                window.open(mapUrl, '_blank');
+            };
+
+
+In JSX, add below <td> The code checks if the latitude is not empty, Creats a Map button that calls above function (handleOpenMap)passing both latitude and longitude. If latitude is empty it means also longitude is empty (The Map button is not shown).
+
+
+        <td>
+            {booking.latitude === '' ? (
+                <></>
+            ) : (
+                <button
+                    onClick={() => handleOpenMap(booking.latitude, booking.longitude)}
+                    className="btn btn-primary btn-sm"
+                >
+                    Map
+                </button>
+            )}
+        </td>
+
+
+
+Below is the MyBookings Full Code.
+
+         // Imports
+        import { useEffect, useState } from "react";
+        import axiosInstanceToken from "../helpers/axiosInstanceToken";
+        import CheckSession from "../helpers/CheckSession";
+        import Layout from "../helpers/Layout";
+        import Main from "../styles/Main";
+        import NursesDialog from "./NursesDialog";
+
+        const MyBookings = () => {
+
+            // Check if user is logged in
+            const { lab_name, lab_id, refresh_token } = CheckSession();
+            
+            // Hooks
+            const [bookings, setBookings] = useState([]); // Empty
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [filteredData, setFilteredData] = useState([]); 
+            const [query, setQuery] = useState(''); // Search query
+            
+            //Access the viewlabookings Endpoint,Provide lab_id in the body to get only bookings for logged in lab
+            useEffect(() => {
+                axiosInstanceToken.post("/viewlabookings", { lab_id: lab_id })
+                    .then(function (response) {
+                        console.log("Full Response: ", response);
+                        console.log("Data: ", response.data);
+                        //Update Hooks
+                        setBookings(response.data); // important
+                        setFilteredData(response.data);
+                        setLoading(false);
+                    })
+                    .catch(function (error) {
+                        //Update Hooks
+                        console.log(error);
+                        setError(error.message);
+                        setLoading(false);
+                }); // end catch
+            }, [lab_id]); // end useEffect
+
+            // This will handle the Live Search
+            const handleLiveSearch = (value) => {
+                setQuery(value); // query has something as long someone is searching
+                const filtered = bookings && bookings.filter((item) =>
+                    item.appointment_date.toLowerCase().includes(value.toLowerCase()) ||
+                    item.invoice_no.toLowerCase().includes(value.toLowerCase())
+                );
+                setFilteredData(filtered);
+            };
+
+            // This will handle Open Map - Using available Latitude and Longitude  - -ADD THIS
+            const handleOpenMap = (latitude, longitude) => {
+                const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                window.open(mapUrl, '_blank');
+            };
+
+            return (
+                <div>
+                    <Layout />
+                    <Main>
+                        <input
+                            type="text"
+                            placeholder="Search a date/Invoice No"
+                            value={query}
+                            onChange={(e) => handleLiveSearch(e.target.value)}
+                            className="form-control"
+                        />
+                        
+                        <table className="table table-striped bg-light p-5 m-1">
+                            {loading && <div className="text-warning">Loading ... </div>}
+                            {error && <div className="text-danger"> Error occurred. Try Later </div>}
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Member</th>
+                                    <th>Where Taken</th>
+                                    <th>Test Name</th>
+                                    <th>Inv No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredData && filteredData.length > 0 ? (
+                                    filteredData.map((booking) => (
+                                        <tr className="mt-5" key={booking.book_id}>
+                                            <td>{booking.appointment_date}</td>
+                                            <td>{booking.appointment_time}</td>
+                                            <td>{booking.key.surname}</td>
+                                            <td>{booking.where_taken}</td>
+                                            <td>{booking.test_details.test_name}</td>
+                                            <td>{booking.invoice_no}</td>
+                                            
+                                             {/* ADD THIS  - BELOW*/}
+                                            <td>
+                                                {booking.latitude === '' ? (
+                                                    <></>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleOpenMap(booking.latitude, booking.longitude)}
+                                                        className="btn btn-primary btn-sm"
+                                                    >
+                                                        Map
+                                                    </button>
+                                                )}
+                                            </td>
+
+                                        
+                                        </tr>
+                                    ))
+                                ) : (
+                                    !loading && <tr><td colSpan="6" className="text-center">No bookings found</td></tr>
+                                )}
+                    
+                            </tbody>
+                        </table>
+                    </Main>
+                </div>
+            );
+        };
+
+        export default MyBookings;
+
+Run and Acccess http://localhost:3000/mybookings
+Observe the Map Button as shown in below screen.
+![Alt text](image-13.png)
 
 
 

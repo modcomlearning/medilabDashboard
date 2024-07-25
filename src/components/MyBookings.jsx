@@ -1,12 +1,13 @@
+//Imports
 import { useEffect, useState } from "react";
-import axiosInstance from "../helpers/axiosInstanceToken";
+import axiosInstanceToken from "../helpers/axiosInstanceToken";
 import CheckSession from "../helpers/CheckSession";
 import Layout from "../helpers/Layout";
 import Main from "../styles/Main";
 import NursesDialog from "./NursesDialog";
 
 const MyBookings = () => {
-    // Protect
+    // Check if user is logged in
     const { lab_name, lab_id, refresh_token } = CheckSession();
     
     // Hooks
@@ -18,24 +19,26 @@ const MyBookings = () => {
     const [invoice_no, setInvoice] = useState(null);
     const [query, setQuery] = useState(''); // Search query
     
-    // const { instance } = axiosInstance();
-
+  
+    //Access API and Provide the body with lab_id to get bookings for a specific lab
     useEffect(() => {
-        axiosInstance.post("/viewlabookings", { lab_id: lab_id })
+        axiosInstanceToken.post("/viewlabookings", { lab_id: lab_id })
             .then(function (response) {
                 console.log("Full Response: ", response);
                 console.log("Data: ", response.data);
+                //Update Hooks - Bookins and Filtered data
                 setBookings(response.data); // important
                 setFilteredData(response.data);
-                setLoading(false);
+                setLoading(false); //Update Loading to False - Stop Loading
             })
             .catch(function (error) {
                 console.log(error);
                 setError(error.message);
-                setLoading(false);
+                setLoading(false); //Update Loading to False - Stop Loading
         }); // end catch
     }, [lab_id]); // end useEffect
 
+    // This is for Live Search
     const handleLiveSearch = (value) => {
         setQuery(value); // query has something as long someone is searching
         const filtered = bookings && bookings.filter((item) =>
@@ -45,6 +48,7 @@ const MyBookings = () => {
         setFilteredData(filtered);
     };
 
+    // This is for handling the Google Map
     const handleOpenMap = (latitude, longitude) => {
         const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
         window.open(mapUrl, '_blank');
