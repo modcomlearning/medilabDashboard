@@ -1101,7 +1101,7 @@ Open your Signin.jsx and write below code.
 
 
 Run and Access Signin    http://127.0.0.1:3000/signin <br>
-Test after successul Login, it navigates to Or Dashboard  with SIdebar, Topbar and MainContent <br>
+Test after successul Login, it navigates to Dashboard  with SIdebar, Topbar and MainContent <br>
 ![Alt text](image-4.png)
 
 
@@ -1163,8 +1163,8 @@ Your Complete and Updated TopBar.jsx looks like below
         `
 
 Run the Code and Access Signin, Signin with correct credentials <br>
-Observe in the dashboard the Logged in lab_name is displayed at the Top Right of the TopBar.
-An example below Screen shows Kim is the Lab Name Logged In.  Try Signup and Signin with a New Lab and Observe if the TopBar will reflect the New Logged in Lab.
+Observe in the dashboard the Logged in lab_name is displayed at the Top Right of the TopBar.<br>
+An example - below Screen shows Kim is the Lab Name Logged In.  Try Signup and Signin with a New Lab and Observe that the TopBar will reflect the New Logged in Lab name.
 
 ![Alt text](image-10.png)
 
@@ -1172,7 +1172,7 @@ An example below Screen shows Kim is the Lab Name Logged In.  Try Signup and Sig
 
 ### Step 3
 We create a component to help us check if user is logged in or Not <br>
-IN helpers Folder, Create a File named CheckSession.jsx and write below code.
+In helpers Folder, Create a File named CheckSession.jsx and write below code.
 
     import { useEffect } from "react"
     import { useNavigate } from "react-router-dom"
@@ -1201,13 +1201,14 @@ IN helpers Folder, Create a File named CheckSession.jsx and write below code.
     }
     
     export default CheckSession;
-    //ANy Component that uses this CheckSession will receive the lab_name, lab_id, access_token
-    //If a User is logged in,ELse it will navigate to signin
-    //We will be using this Component to check if user is logged in or not.
+
+Any Component that uses this CheckSession will receive the lab_name, lab_id, access_token<br>
+If a User is logged in,ELse it will navigate to signin<br>
+We will be using this Component to check if user is logged in or not.<br>
 
 
 
-To test that above code Go to MainContent and add below code, Just below the Defination of your component<br>
+To test above code Go to MainContent and add below code, Just below the Defination of your component<br>
 
         import CheckSession from '../helpers/CheckSession';   //Import this
         const MainContent = () => {   //This is your MainContent Arrow Functio
@@ -1220,10 +1221,10 @@ Test by Accessing the MainContent    http://127.0.0.1:3000/   when the user is n
 
 ### Step 4
 In the Next steps we work on remaining Components <br>
-The Components such as AddTests, AddNurses etc will need to access the API, Recall that these APIS requird an access_token which is usually generated upon user login. <br><br>
+The Components such as AddTests, AddNurses etc will need to access the API, Recall that these APIS required an access_token which is usually generated upon user login. <br><br>
 
 
-Our axiosInstance.jsx we created does not provide an access token to the API and it was not needed for SIgnup and Signin COmponents. But for othet APIs the access_token is required, hence we create a new axioInstance that provide the APIs with access token. <br>
+Our axiosInstance.jsx we created does not provide an access token to the API and it was not needed for Signup and Signin Components. But for other APIs the access_token is required, hence we create a new axioInstance that will help access the APIs with an access token. <br>
 
 In helpers Folder, Create a File named axiosIntanceToken.jsx and write below code.
 
@@ -1670,7 +1671,7 @@ Run and Access  http://localhost:3000/addnurses
 ![Alt text](image-8.png)
 
 ### Step 9
-In this step, we will retrieve the nurse saved, Open/Create Nurses.jsx and write below code.
+In this step, we will retrieve the nurses saved, Open/Create Nurses.jsx and write below code.
 
         // Import
         import { useEffect } from "react"
