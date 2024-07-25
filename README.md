@@ -2091,6 +2091,8 @@ Finally, Still in SideBar Component Add below line in your JSX code, Below Code 
 
 
 Below is the Full Code for SideBar.jsx
+
+
          //Imports
         import React, { useState } from 'react';
         import styled from "styled-components"
@@ -2264,7 +2266,7 @@ Below is the Full Code for SideBar.jsx
 Run your App.
     Test the Signin and Logout., Below sceen shows the logout button in side bar.
 
-    ![Alt text](image-14.png)
+![Alt text](image-14.png)
 
 
 <br><br><br><br>
